@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50717
 File Encoding         : 65001
 
-Date: 2019-08-21 16:07:51
+Date: 2019-08-22 18:03:44
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -1162,6 +1162,40 @@ CREATE TABLE `entrust_msg_err_log` (
 -- Records of entrust_msg_err_log
 -- ----------------------------
 INSERT INTO `entrust_msg_err_log` VALUES ('613766087590281216', '0', '10000', '20000', '500008501880.6322646163', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('613767511711678464', '0', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('613767523564781568', '0', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('613768756216201216', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('613768764952936448', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113836898717696', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113843026595840', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113845576732672', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113847539666944', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113848814735360', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113849812979712', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113851557810176', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113860693004288', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113863155060736', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113864665010176', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614113866577612800', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614127223602941952', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614127226610257920', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614134311712460800', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614136312554852352', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614136315360841728', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614136317105672192', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614136318951165952', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614136325678829568', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614136890412503040', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614136892153139200', '1', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614137740107190272', '0', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614137756532084736', '0', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614137759833001984', '0', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614138404128428032', '0', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614138406699536384', '0', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614138408553418752', '0', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614140401070116864', '0', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614140408535977984', '0', '10000', '20000', '0.0000000000', '0', '0', null, null);
+INSERT INTO `entrust_msg_err_log` VALUES ('614153322437283840', '0', null, null, '0.0000000000', '0', '0', null, null);
 
 -- ----------------------------
 -- Table structure for entrust_order
@@ -1171,8 +1205,9 @@ CREATE TABLE `entrust_order` (
   `id` bigint(20) NOT NULL,
   `market_id` int(11) DEFAULT NULL COMMENT '市场（币对）id',
   `market_code` varchar(100) DEFAULT NULL COMMENT '市场（币对）编码，例如BTC_USDT',
-  `entrust_volume` decimal(20,10) DEFAULT NULL COMMENT '委托（挂单）总数量',
-  `entrust_price` decimal(20,10) DEFAULT NULL COMMENT '限价单委托（挂单）单价',
+  `entrust_volume` decimal(10,10) DEFAULT NULL COMMENT '委托（挂单）总数量',
+  `entrust_price` decimal(10,10) DEFAULT NULL COMMENT '限价单委托（挂单）单价',
+  `entrust_amount` decimal(20,10) DEFAULT NULL,
   `deal_volume` decimal(20,10) DEFAULT NULL COMMENT '已成交数量',
   `deal_avg_price` decimal(10,2) DEFAULT NULL COMMENT '已成交平均单价',
   `fee_rate` decimal(20,10) DEFAULT NULL COMMENT '手续费费率',
@@ -1180,6 +1215,8 @@ CREATE TABLE `entrust_order` (
   `frozen_fee` decimal(20,10) DEFAULT NULL COMMENT '手续费冻结总金额',
   `total_deal_fee` decimal(20,10) DEFAULT NULL COMMENT '已收取手续费',
   `user_id` bigint(20) DEFAULT NULL,
+  `available_balance_account_id` bigint(20) DEFAULT NULL,
+  `freezing_balance_account_id` bigint(20) DEFAULT NULL,
   `order_type` int(2) DEFAULT NULL COMMENT '订单类型（1币币 2杠杆）',
   `trade_type` int(2) DEFAULT NULL COMMENT '交易类型1买2卖',
   `entrust_way` int(2) DEFAULT NULL COMMENT '委托类型（1限价 2市价）',

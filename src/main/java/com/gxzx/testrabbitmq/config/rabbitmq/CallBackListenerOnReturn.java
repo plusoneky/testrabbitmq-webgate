@@ -1,18 +1,20 @@
 package com.gxzx.testrabbitmq.config.rabbitmq;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ReturnCallback;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gxzx.testrabbitmq.web.entity.EntrustMsgErrLog;
+import com.gxzx.testrabbitmq.web.entity.EntrustOrder;
 import com.gxzx.testrabbitmq.web.mapper.EntrustMsgErrLogMapper;
 
 /**
@@ -35,9 +37,9 @@ public class CallBackListenerOnReturn implements ReturnCallback{
 		logger.error("消息丢失了，此类都是RabbitMQ的配置异常导致的，问题非常严重:exchange({}),route({}),replyCode({}),replyText({}),message:{}",exchange,routingKey,replyCode,replyText,message);
 		
      	//将异常事件登记到预估值账户异常表（订单ID，金额，冷热账户ID，是否扣费，是否完成核对，创建时间，核对时间）。此情况需要进一步检查订单数据库，定时核对订单是否入库，确认没有入库时，执行回滚预估值账户。  
-    	EntrustMsgErrLog entrustMsgErrLog = null;
+    	EntrustOrder entrustOrder = null;
 		try {
-			entrustMsgErrLog = objectMapper.readValue(message.getBody().toString(), EntrustMsgErrLog.class);
+			entrustOrder = objectMapper.readValue(new String(message.getBody(),"UTF-8"), EntrustOrder.class);
 		} catch (JsonParseException e) {
 			logger.error("",e);
 		} catch (JsonMappingException e) {
@@ -45,7 +47,14 @@ public class CallBackListenerOnReturn implements ReturnCallback{
 		} catch (IOException e) {
 			logger.error("",e);
 		}
-    	
+		
+		EntrustMsgErrLog entrustMsgErrLog = new EntrustMsgErrLog();
+		entrustMsgErrLog.setEntrustId(entrustOrder.getId());
+		entrustMsgErrLog.setUserId(entrustOrder.getUserId());
+		entrustMsgErrLog.setAvailableBalanceAccountId(entrustOrder.getAvailableBalanceAccountId());
+		entrustMsgErrLog.setFreezingBalanceAccountId(entrustOrder.getFreezingBalanceAccountId());
+		entrustMsgErrLog.setAmount(entrustOrder.getEntrustAmount());
+		
     	logger.info("发生异常事件入库： "
     	+"etrustId="+entrustMsgErrLog.getEntrustId()
     	+",amount="+entrustMsgErrLog.getAmount()

@@ -83,6 +83,11 @@ public class EntrustOrderServiceImpl implements IEntrustOrderService {
 		BigDecimal amount = entity.getEntrustPrice().multiply(entity.getEntrustVolume());
 		amount = amount.setScale(10, RoundingMode.HALF_UP);
 		
+		//填充订单总额、用户冷热资金账户ID
+		entity.setAvailableBalanceAccountId(availableBalanceAccountId);
+		entity.setFreezingBalanceAccountId(freezingBalanceAccountId);
+		entity.setEntrustAmount(amount);
+		
 		//打印本地操作日志
 		logger.info("2.have successed to update user estimation account, now will send msg to rabbitmq, id=%s",entity.getId());
 

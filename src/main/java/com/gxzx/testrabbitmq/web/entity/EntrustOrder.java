@@ -11,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author administrator
- * @since 2019-08-21
+ * @since 2019-08-22
  */
 public class EntrustOrder extends Model<EntrustOrder> {
 
@@ -38,6 +38,8 @@ public class EntrustOrder extends Model<EntrustOrder> {
      * 限价单委托（挂单）单价
      */
     private BigDecimal entrustPrice;
+
+    private BigDecimal entrustAmount;
 
     /**
      * 已成交数量
@@ -70,6 +72,10 @@ public class EntrustOrder extends Model<EntrustOrder> {
     private BigDecimal totalDealFee;
 
     private Long userId;
+
+    private Long availableBalanceAccountId;
+
+    private Long freezingBalanceAccountId;
 
     /**
      * 订单类型（1币币 2杠杆）
@@ -147,6 +153,14 @@ public class EntrustOrder extends Model<EntrustOrder> {
         this.entrustPrice = entrustPrice;
     }
 
+    public BigDecimal getEntrustAmount() {
+        return entrustAmount;
+    }
+
+    public void setEntrustAmount(BigDecimal entrustAmount) {
+        this.entrustAmount = entrustAmount;
+    }
+
     public BigDecimal getDealVolume() {
         return dealVolume;
     }
@@ -201,6 +215,22 @@ public class EntrustOrder extends Model<EntrustOrder> {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getAvailableBalanceAccountId() {
+        return availableBalanceAccountId;
+    }
+
+    public void setAvailableBalanceAccountId(Long availableBalanceAccountId) {
+        this.availableBalanceAccountId = availableBalanceAccountId;
+    }
+
+    public Long getFreezingBalanceAccountId() {
+        return freezingBalanceAccountId;
+    }
+
+    public void setFreezingBalanceAccountId(Long freezingBalanceAccountId) {
+        this.freezingBalanceAccountId = freezingBalanceAccountId;
     }
 
     public Integer getOrderType() {
@@ -272,6 +302,7 @@ public class EntrustOrder extends Model<EntrustOrder> {
         ", marketCode=" + marketCode +
         ", entrustVolume=" + entrustVolume +
         ", entrustPrice=" + entrustPrice +
+        ", entrustAmount=" + entrustAmount +
         ", dealVolume=" + dealVolume +
         ", dealAvgPrice=" + dealAvgPrice +
         ", feeRate=" + feeRate +
@@ -279,6 +310,8 @@ public class EntrustOrder extends Model<EntrustOrder> {
         ", frozenFee=" + frozenFee +
         ", totalDealFee=" + totalDealFee +
         ", userId=" + userId +
+        ", availableBalanceAccountId=" + availableBalanceAccountId +
+        ", freezingBalanceAccountId=" + freezingBalanceAccountId +
         ", orderType=" + orderType +
         ", tradeType=" + tradeType +
         ", entrustWay=" + entrustWay +
