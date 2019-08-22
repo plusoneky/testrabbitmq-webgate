@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gxzx.testrabbitmq.web.mapper.EntrustMsgErrLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gxzx.testrabbitmq.web.entity.EntrustMsgErrLog">
+        <id column="entrust_id" property="entrustId" />
+        <result column="user_id" property="userId" />
+        <result column="available_balance_account_id" property="availableBalanceAccountId" />
+        <result column="freezing_balance_account_id" property="freezingBalanceAccountId" />
+        <result column="amount" property="amount" />
+        <result column="result" property="result" />
+        <result column="status" property="status" />
+        <result column="gmt_created_time" property="gmtCreatedTime" />
+        <result column="gmt_modified_time" property="gmtModifiedTime" />
+    </resultMap>
+
+</mapper>

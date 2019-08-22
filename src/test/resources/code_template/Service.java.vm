@@ -1,0 +1,58 @@
+package ${package.Service};
+
+import ${package.Entity}.${entity};
+import ${superServiceClassPackage};
+import ${cfg.commPackageName}.exception.IErrCode;
+
+/**
+ * <p>
+ * $!{table.comment} 服务类
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+#if(${kotlin})
+interface ${table.serviceName} : ${superServiceClass}<${entity}>
+#else
+public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
+
+	/**
+	 *该异常枚举非模板自动生成，使用时service直接向上抛出
+	 *如： throw new OtcException(${table.serviceName}ErrCode.ParamIsMissing);
+	 */
+	public enum ${table.serviceName}ErrCode implements IErrCode {
+        ParamIsMissing("ParamIsMissing", "必填的$!{table.comment}业务参数不能为空"),
+        ParamIsWrong("ParamIsWrong", "业务参数异常"),
+        ;
+
+        private String errCode;
+        private String errMsg;
+
+        private ${table.serviceName}ErrCode(String errCode, String errMsg) {
+            this.setErrCode(errCode);
+            this.setErrMsg(errMsg);
+        }
+
+        @Override
+        public String getErrCode() {
+            return this.getClass().getSimpleName() + "." + errCode;
+        }
+
+        @Override
+        public void setErrCode(String errCode) {
+            this.errCode = errCode;
+        }
+
+        @Override
+        public String getErrMsg() {
+            return errMsg;
+        }
+
+        @Override
+        public void setErrMsg(String errMsg) {
+            this.errMsg = errMsg;
+        }
+    }
+}
+#end
