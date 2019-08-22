@@ -95,7 +95,7 @@ public class WebConfig implements WebMvcConfigurer{ // WebMvcConfigurerAdapter {
      */
     @Bean(name = "snowflakeIdWorker")
     public SnowflakeIdWorker getIdWorker() {
-        return new SnowflakeIdWorker(projectProperties.getSysProperties().getWorkMachineId(), projectProperties.getSysProperties().getDataCenterId());
+        return new SnowflakeIdWorker(projectProperties.getSysProperties().getSnowflakeIdWorker().getWorkMachineId(), projectProperties.getSysProperties().getSnowflakeIdWorker().getDataCenterId());
     }
 	
 	public void addViewControllers(ViewControllerRegistry registry) {
