@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 /**
- * RabbitMQ的交换机创建使用命令脚本的方式进行创建，交换机为广播类型。
+ * RabbitMQ的交换机创建使用手动命令脚本的方式进行创建，交换机为广播类型。
  * 业务数据库币对表，配置每个币对所属的的交换机，将币对与交换机进行绑定，所以市场（币对）表有一个所属交换机字段。
  * 币对如果需要修改交所属的交换机前需要停止该币对的撮合，发送订单消息时，将发送到对应的交换机上的所有队列。
  * 撮合服务，配置一个负责监听的交换机，以及消息队列名（队列名隐式的用机架名和服务器名）。
@@ -18,19 +18,19 @@ import org.springframework.context.annotation.Scope;
  *
  */
 @Configuration
-public class MatcherCommRabbitConfig {
+public class RabbitMQSenderConfig {
 	
 	@Autowired
 	public ConnectionFactory connectionFactory;
 	
 	@Bean
-	public ReturnCallBackListener returnCallBackListener(){
-		return new ReturnCallBackListener();
+	public CallBackListenerOnReturn returnCallBackListener(){
+		return new CallBackListenerOnReturn();
 	}
 	
 	@Bean
-	public ConfirmCallBackListener confirmCallBackListener(){
-		return new ConfirmCallBackListener();
+	public CallBackListenerOnConfirm confirmCallBackListener(){
+		return new CallBackListenerOnConfirm();
 	}	
 
 	@Bean
