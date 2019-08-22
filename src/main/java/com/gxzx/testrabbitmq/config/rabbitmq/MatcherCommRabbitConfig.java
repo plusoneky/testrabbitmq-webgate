@@ -8,12 +8,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import com.gxzx.testrabbitmq.config.properties.ProjectProperties;
-
 /**
- * 交换机的配置保存到业务数据库中的交换机配置表，币对与交换机进行绑定，所以市场（币对）表有一个所属交换机字段。币对如果需要修改交换机需要停止撮合
- * RabbitMQ的交换机、队列、绑定队列到交换机的创建使用命令脚本的方式进行创建。
- * 发送订单消息时，发送到对应的交换机上的所有队列。
+ * RabbitMQ的交换机创建使用命令脚本的方式进行创建，交换机为广播类型。
+ * 业务数据库币对表，配置每个币对所属的的交换机，将币对与交换机进行绑定，所以市场（币对）表有一个所属交换机字段。
+ * 币对如果需要修改交所属的交换机前需要停止该币对的撮合，发送订单消息时，将发送到对应的交换机上的所有队列。
  * 撮合服务，配置一个负责监听的交换机，以及消息队列名（队列名隐式的用机架名和服务器名）。
  * 也就是说同一个币对，对应的撮合的一主多从，每个节点配置的交换机名一样，但消息队列不同。
  * @author Administrator
