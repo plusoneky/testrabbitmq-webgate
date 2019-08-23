@@ -78,9 +78,9 @@ import org.springframework.context.annotation.Scope;
  *    }else{
  *       撮合
  *    }
-
+ *
  *           
- *           
+ * 2、主机不需要关心latestHistoryOrderId，从机需要同步latestHistoryOrderId，这是一个需要多线程访问的变量，需要同步。           
  * 
  * @author Administrator
  *
