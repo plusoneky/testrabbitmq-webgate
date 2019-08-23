@@ -18,17 +18,17 @@ import org.springframework.context.annotation.Scope;
  *                                            |         |                |              |              |           |                 |             | (cleaing saved history orders then stop)                                                                         
  *                                            |         |                ----------------              -------------                 ---------------                                                                          
  *                                            |         |                                                                                   ▲
- *                                            |         |                                                                                   |
+ *                                            |         |                                                                                   ▲
  *                                            |         |                                                                            timing fanout latest saved orderId
- *                                            |         |                                                                                   |
+ *                                            |         |                                                                                   ▲
  * --------------                -----------------------|                ----------------              -------------                 ---------------           ---------                      
  * |  webgate   | -1、publish--> |  fanout    |		    | ---subscript-> |   matcher    |              |           |                 |   master    | on event  |       |                      
  * | (publisher)|                |  broker    |queue2   | none confirm   | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |---save--> | mysql |                      
  * |            | <-3、confirm---|            |		    |                |              |              |           |                 |             |	       |       |                      
- * --------------          |--▶▶▶----------------------|                ----------------              -------------                 ---------------	           ---------                      
- *                         |               |  |		    |                                                                                   |                                                   
+ * --------------          |-▶▶▶▶----------------------|                ----------------              -------------                 ---------------	           ---------                      
+ *                         |               |  |		    |                                                                                   ▼                                                   
  *                         |               |  |		    |                                                                             timing fanout latest saved orderId                                                  
- *                         |--2、durable --|  |		    |                                                                                   |
+ *                         |--2、durable --|  |		    |                                                                                   ▼
  *                                            |         |                                                                                   ▼                                                                                   
  *                                            |		    |                ----------------              -------------                 ---------------                                                                          
  *                                            |queue3	| ---subscript-> |   matcher    |              |           |                 |   slave     |                                                                         
