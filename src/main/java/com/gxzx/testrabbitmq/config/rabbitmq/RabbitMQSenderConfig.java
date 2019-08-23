@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Scope;
  * |  webgate   | -1、publish--> |  fanout    |		    | ---subscript-> |   matcher    |              |           |                 |   master    | on event  |       |                      
  * | (publisher)|                |  broker    |queue2   | none confirm   | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |---save--> | mysql |                      
  * |            | <-3、confirm---|            |		    |                |              |              |           |                 |             |	       |       |                      
- * --------------          |-▶▶▶▶----------------------|                ----------------              -------------                 ---------------	           ---------                      
+ * --------------          |-▶▶▶▶----------------------|                ----------------              -------------                 ---------------	       ---------                      
  *                         |               |  |		    |                                                                                   ▼                                                   
  *                         |               |  |		    |                                                                             timing fanout latest saved orderId                                                  
  *                         |--2、durable --|  |		    |                                                                                   ▼
