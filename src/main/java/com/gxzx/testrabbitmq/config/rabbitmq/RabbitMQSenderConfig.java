@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Scope;
 
 /**
  * 
- *                                                      |<--------------------------------4、async to save db-------------------------------------------------------------->|       
+ *                                                      |<---------------------------------------------------4、async to save db------------------------------------------------------------>|       
  *                                            |---------|                                                                                                                         
  *                                            |         |                ----------------              -------------                 ---------------                              
  *                                            |         | ---subscript-> |   matcher    |              |           |                 |   slave     |                                                                          
- *                                            |queue1   |  none confirm  | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |-------on event fanout start------------                                                                        
+ *                                            |queue1   |  none confirm  | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |-------on fanout event start------------                                                                        
  *                                            |         |                |              |              |           |                 |             | (cleaing saved history orders then stop)                                                                         
  *                                            |         |                ----------------              -------------                 ---------------                                                                          
  *                                            |         |                                                                                   ▲
@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Scope;
  *                                            |         |                                                                                   ▼                                                                                   
  *                                            |		    |                ----------------              -------------                 ---------------                                                                          
  *                                            |queue3	| ---subscript-> |   matcher    |              |           |                 |   slave     |                                                                         
- *                                            | 	    |  none confirm  | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |-------on event fanout start------------                                                                         
+ *                                            | 	    |  none confirm  | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |-------on fanout event start------------                                                                         
  *                                            | 	    |                |              |              |           |                 |             | (cleaing saved history orders then stop)                                                                           
  *                                            | 	    |                ----------------              -------------                 ---------------                                                                          
  *                                            |---------|
@@ -49,9 +49,10 @@ import org.springframework.context.annotation.Scope;
  * 2、consumer：Auto Confirm。因为广播类型的交换机上会创建多个MQ队列，处理运行时异常的逻辑后，结论是采用自动确认ACK机制。前提是MQ不能推送重复的消息。
  * consumer收到推送消息，服务器已删除该条消息，已成功撮合，已成功入库，消息消费者挂了。 无需处理，不影响交换机上其他队列，系统会选举新的主节点继续运行。
  * consumer收到推送消息，服务器已删除该条消息，已成功撮合，已成功入库，MQ服务器挂了。 无需处理。重启MQ服务器就行了。
- * consumer收到推送消息，服务器已删除该条消息，已成功撮合，由于数据库异常，未成功入库。需要补偿机制处理：将消息丢到一个单独的MQ队列，延迟持久化。
- * consumer收到推送消息，服务器已删除该条消息，已成功撮合，由于业务异常，比如数据库余额不足，不允许入库。需要补偿机制处理：作废此委托，以及对手单委托，并重新同步这两个用户的预估值账户。
+ * consumer收到推送消息，服务器已删除该条消息，已成功撮合，由于数据库服务器异常，如数据库网卡故障、磁盘满了等，未成功入库。需要补偿机制处理：将消息丢到一个单独的MQ队列，异步持久化。
+ * consumer收到推送消息，服务器已删除该条消息，已成功撮合，由于消费者服务器网卡故障等，未成功入库。无需处理。其他从机会接管。
  * consumer收到推送消息，服务器已删除该条消息，已成功撮合，由于消息消费者挂了，未成功入库。 无需处理。此消费者内存中数据全部丢失了，但系统会选举新的主节点继续运行，其上的入库进程会找到最近的入库消息后，顺序进行。   
+ * consumer收到推送消息，服务器已删除该条消息，已成功撮合，出现业务异常，比如数据库该用户余额不足导致不允许此委托入库。需要补偿机制处理：丢掉此委托，增加对手的单委托相应金额的异常撤单（需要通知到该用户），并重新同步这两个用户的预估值账户。
  *
  * 
  * 
