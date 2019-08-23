@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Scope;
  *                                            |---------|                                                                                                                         
  *                                            |         |                ----------------              -------------                 ---------------                              
  *                                            |         | ---subscript-> |   matcher    |              |           |                 |   slave     |                                                                          
- *                                            |queue1   |  none confirm  | (consumer)   |---publish -->| disruptor | ---subscript--> |  consumer   |-------on event fanout---------                                                                        
- *                                            |         |                |              |              |           |                 |             | (cleaing saved orders)                                                                         
+ *                                            |queue1   |  none confirm  | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |-------on event fanout start------------                                                                        
+ *                                            |         |                |              |              |           |                 |             | (cleaing saved history orders then stop)                                                                         
  *                                            |         |                ----------------              -------------                 ---------------                                                                          
  *                                            |         |                                                                                   ▲
  *                                            |         |                                                                                   |
@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Scope;
  *                                            |         |                                                                                   |
  * --------------                -----------------------|                ----------------              -------------                 ---------------           ---------                      
  * |  webgate   | -1、publish--> |  fanout    |		    | ---subscript-> |   matcher    |              |           |                 |   master    | on event  |       |                      
- * | (publisher)|                |  broker    |queue2   | none confirm   | (consumer)   |---publish -->| disruptor | ---subscript--> |  consumer   |---save--> | mysql |                      
+ * | (publisher)|                |  broker    |queue2   | none confirm   | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |---save--> | mysql |                      
  * |            | <-3、confirm---|            |		    |                |              |              |           |                 |             |	       |       |                      
  * --------------          |--▶▶▶----------------------|                ----------------              -------------                 ---------------	           ---------                      
  *                         |               |  |		    |                                                                                   |                                                   
@@ -32,8 +32,8 @@ import org.springframework.context.annotation.Scope;
  *                                            |         |                                                                                   ▼                                                                                   
  *                                            |		    |                ----------------              -------------                 ---------------                                                                          
  *                                            |queue3	| ---subscript-> |   matcher    |              |           |                 |   slave     |                                                                         
- *                                            | 	    |  none confirm  | (consumer)   |---publish -->| disruptor | ---subscript--> |  consumer   |-------on event fanout---------                                                                         
- *                                            | 	    |                |              |              |           |                 |             | (cleaing saved orders)                                                                          
+ *                                            | 	    |  none confirm  | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |-------on event fanout start------------                                                                         
+ *                                            | 	    |                |              |              |           |                 |             | (cleaing saved history orders then stop)                                                                           
  *                                            | 	    |                ----------------              -------------                 ---------------                                                                          
  *                                            |---------|
  * 
@@ -52,7 +52,7 @@ import org.springframework.context.annotation.Scope;
  * consumer收到推送消息，服务器已删除该条消息，已成功撮合，由于数据库异常，未成功入库。需要补偿机制处理：将消息丢到一个单独的MQ队列，延迟持久化。
  * consumer收到推送消息，服务器已删除该条消息，已成功撮合，由于业务异常，比如数据库余额不足，不允许入库。需要补偿机制处理：作废此委托，以及对手单委托，并重新同步这两个用户的预估值账户。
  * consumer收到推送消息，服务器已删除该条消息，已成功撮合，由于消息消费者挂了，未成功入库。 无需处理。此消费者内存中数据全部丢失了，但系统会选举新的主节点继续运行，其上的入库进程会找到最近的入库消息后，顺序进行。   
-
+ *
  * 
  * 
  * MQ业务逻辑说明：
