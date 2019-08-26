@@ -26,18 +26,24 @@ import org.springframework.context.annotation.Scope;
  * | (publisher)|                |  broker    |queue2   | none confirm   | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |---save--> | mysql |                      
  * |            | <-3、confirm---|            |		    |                |              |              |           |                 |             |	       |       |                      
  * --------------          |-▶▶▶▶----------------------|                ----------------              -------------                 ---------------	       ---------                      
- *                         |               |  |		    |                                                                                   ▼                                                   
- *                         |               |  |		    |                                                                             timing fanout latest saved orderId                                                  
- *                         |--2、durable --|  |		    |                                                                                   ▼
- *                                            |         |                                                                                   ▼                                                                                   
- *                                            |		    |                ----------------              -------------                 ---------------                                                                          
- *                                            |queue3	| ---subscript-> |   matcher    |              |           |                 |   slave     |                                                                         
- *                                            | 	    |  none confirm  | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |-------on fanout event start------------                                                                         
- *                                            | 	    |                |              |              |           |                 |             | (cleaing saved history orders then stop)                                                                           
- *                                            | 	    |                ----------------              -------------                 ---------------                                                                          
- *                                            |---------|
- * 
- *
+ *       |                 |               |  |		    |                                                                                   ▼                                                   
+ *       |                 |               |  |		    |                                                                             timing fanout latest saved orderId                                                  
+ *       |                 |--2、durable --|  |		    |                                                                                   ▼
+ *       |                                    |         |                                                                                   ▼                                                                                   
+ *       |                                    |		    |                ----------------              -------------                 ---------------                                                                          
+ *       |                                    |queue3	| ---subscript-> |   matcher    |              |           |                 |   slave     |                                                                         
+ *       |                                    | 	    |  none confirm  | (consumer)   |---publish -->|ring buffer| ---subscript--> |  consumer   |-------on fanout event start------------                                                                         
+ *       |                                    | 	    |                |              |              |           |                 |             | (cleaing saved history orders then stop)                                                                           
+ *       |                                    | 	    |                ----------------              -------------                 ---------------                                                                          
+ *       |                                    |---------|
+ *       |
+ *       |                       ------------ 
+ *       -------------------▶▶▶▶|gang sheng|
+ *                               |          |
+ *                               |          |
+ *                               ------------
+ *       
+ *       
  * 
  * 一、Rabbit MQ异常情况分析：
  * 1、publisher： Publisher Confirms。确保发送消息的可靠性，失败了需要回滚预估值账户。

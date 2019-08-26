@@ -24,16 +24,16 @@ import com.gxzx.testrabbitmq.web.mapper.MarketMapper;
 
 /**
  * <p>
- *  服务实现类
+ *  本地委托单服务实现类
  * </p>
  *
  * @author administrator
  * @since 2019-08-14
  */
 @Service
-public class EntrustOrderServiceImpl implements IEntrustOrderService {
+public class EntrustOrderServiceLocalImpl implements IEntrustOrderService {
     
-	private static final Logger logger = LoggerFactory.getLogger(EntrustOrderServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(EntrustOrderServiceLocalImpl.class);
 	
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -43,27 +43,17 @@ public class EntrustOrderServiceImpl implements IEntrustOrderService {
 	
     @Autowired
     private RabbitTemplate rabbitTemplate;
-	
-	@Autowired
-	MarketMapper marketMapper;
-	
+
 	/* 
-	 * redis账户记账和发MQ订单消息这两个步骤当然是希望能放到一个事务中，即记账失败了，就不能发MQ消息，发MQ消息失败了要回滚记账。
-	 * 这里我的思路是：
-	 * 1、关闭进程要实现优雅停服，让所有工作线程跑完，减少人为导致数据异常的概率。
-	 * 2、数据库保存一张MQ异常事件表，记录超时的MQ消息，或者回滚预估值账户失败的异常订单的订单号和订单金额等信息，
-	 * 		待一定延迟后（确保MQ中没有改用户的委托单）与数据库的订单数据进行核对，如果订单在数据库存在
-	 * 3、打印各个环节的日志，通过ELK检查和分析日志，找出业务没有闭环的订单，这些订单的用户预估值账户可能出现脏数据，需要重新同步做进一步检查。 
-	 * 4、预估值账户，需要实现一个定时任务。定时例如每隔几分钟，遍历检查30分钟前的异常事件订单，数据库订单表是否存在此订单号。
+	 * 
 	 */
-    public boolean sendEntrustOrder(EntrustOrder entity) {
+	@Override
+    public boolean createOrder(EntrustOrder entity, Market market) {
 		boolean returnValue = false;
 		if(null == entity.getUserId()){
 			throw new CustomException(IEntrustOrderServiceErrCode.ParamIsWrong);
 		}
 		
-		//数据校验及获取相关这里应当优化为从Redis缓存读取
-		Market market = marketMapper.selectById(entity.getMarketId());		
 		if(null==market || StringUtils.isBlank(market.getMatcherExchangeName())){
 			logger.error("market table data have no data");
 			return returnValue;

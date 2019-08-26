@@ -2,6 +2,7 @@ package com.gxzx.testrabbitmq.web.biz;
 
 import com.gxzx.testrabbitmq.exception.IErrCode;
 import com.gxzx.testrabbitmq.web.entity.EntrustOrder;
+import com.gxzx.testrabbitmq.web.entity.Market;
 
 public interface IEntrustOrderService {
 	/**
@@ -42,6 +43,6 @@ public interface IEntrustOrderService {
         }
     }
 	
-	boolean sendEntrustOrder(EntrustOrder entity);
+	boolean createOrder(EntrustOrder entity, Market market);
 
 }

@@ -13,6 +13,8 @@ import com.gxzx.testrabbitmq.exception.CustomException;
 import com.gxzx.testrabbitmq.exception.CustomException.CommErrCode;
 import com.gxzx.testrabbitmq.web.biz.IEntrustOrderService;
 import com.gxzx.testrabbitmq.web.entity.EntrustOrder;
+import com.gxzx.testrabbitmq.web.entity.Market;
+import com.gxzx.testrabbitmq.web.service.IMarketService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +32,11 @@ import io.swagger.annotations.ApiParam;
 @RequestMapping("/entrust-order")
 public class EntrustOrderController {
 
+	@Autowired
 	IEntrustOrderService entrustOrderServiceImpl;
+	
+	@Autowired
+	IMarketService marketServiceImpl;
 
 	/**
 	 * 推荐使用构造器注入
@@ -47,8 +53,12 @@ public class EntrustOrderController {
 		if(apiReqDto==null || apiReqDto.getReqBizObj()==null){
 			return new ApiResDto(new CustomException(CommErrCode.ParamIsInvalid));
 		}
+		
+		//数据校验及获取相关这里应当优化为从Redis缓存读取
+		Market market = marketServiceImpl.getById(apiReqDto.getReqBizObj().getMarketId());
+
 		//预估值记账后把订单发送到MQ
-		boolean insertResult = entrustOrderServiceImpl.sendEntrustOrder(apiReqDto.getReqBizObj());
+		boolean insertResult = entrustOrderServiceImpl.createOrder(apiReqDto.getReqBizObj(), market);
 		if(!insertResult){
 			return new ApiResDto(new CustomException(CommErrCode.SysErr));
 		}
