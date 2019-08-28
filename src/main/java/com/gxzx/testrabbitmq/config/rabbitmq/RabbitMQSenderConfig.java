@@ -75,10 +75,10 @@ import org.springframework.context.annotation.Scope;
  * 撮合服务，配置一个负责监听的交换机，以及消息队列名（队列名隐式的用机架名和服务器名）。
  * 也就是说同一个币对，对应的撮合的一主多从，每个节点配置的交换机名一样，但消息队列不同。
  * 
- * 三、采用disruptor 的ring buffer存储撮合结果。ring buffer consumer的工作原理：latestHistoryOrderId 是接受主服务器定时广播发送的最近一个消息ID
+ * 三、采用disruptor 的ring buffer存储撮合结果。ring buffer consumer的工作原理：latestFinishedOrderId 是接受主服务器定时广播发送的最近一个消息ID
  * 1、if(当前主机的主从状态!=主状态){
- *        if (latestHistoryOrderId !=null)
- *           if(onEventOrderId <latestHistoryOrderId){
+ *        if (latestFinishedOrderId !=null)
+ *           if(onEventOrderId <latestFinishedOrderId){
  *           	//这里什么都不需要做相当于丢弃掉该消息，处理下一个事件
  *           }
  *           else{
@@ -94,7 +94,7 @@ import org.springframework.context.annotation.Scope;
  *    }
  *
  *           
- * 2、主机不需要关心latestHistoryOrderId，从机需要同步latestHistoryOrderId，这是一个需要多线程访问的变量，需要同步。           
+ * 2、主机不需要关心latestFinishedOrderId，从机需要同步latestFinishedOrderId，这是一个需要多线程访问的变量，需要同步。           
  * 
  * @author Administrator
  *
