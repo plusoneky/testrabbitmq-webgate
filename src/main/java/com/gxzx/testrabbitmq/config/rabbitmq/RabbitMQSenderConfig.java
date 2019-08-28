@@ -12,46 +12,46 @@ import org.springframework.context.annotation.Scope;
  * 
  * ->箭头表示同步消息。▶◀实体箭头表示异步消息
  * 
- *                                                      |<---------------------------------------------------4、async to save db------------------------------------------------------------>|       
- *                                             |---------|                                                                                                                         
- *                                             |         |                 ----------------              -------------                 ---------------                              
- *                                             |         | ---subscript-▶▶ |   matcher    |              |           |                 |   slave     |                                                                          
- *                                             |queue1   |  none confirm   | (consumer)   |---publish -->|ring buffer| ---subscript-▶▶ |  consumer   |-------on fanout event start------------                                                                        
- *                                             |         |                 |              |              |           |                 |             | (cleaing saved history orders then stop)                                                                         
- *                                             |         |                 ----------------              -------------                 ---------------                                                                          
- *                                             |         |                                                                                   ▲
- *                                             |         |                                                                                   ▲
- *                                             |         |                                                                            timing fanout latest saved orderId
- *                                             |         |                                                                                   ▲
- * --------------                 -----------------------|                 ----------------              -------------                 ---------------           ---------                      
- * |  webgate   | -1、publish-->  |  fanout    |		     | ---subscript-▶▶ |   matcher    |              |           |                 |   master    | on event  |       |                      
- * | (publisher)|                 |  broker    |queue2   | none confirm    | (consumer)   |---publish -->|ring buffer| ---subscript-▶▶ |  consumer   |---save--> | mysql |                      
- * |            |◀◀◀◀-3、confirm-|            |		     |                 |              |              |           |                 |             |	       |       |                      
- * --------------          |----->|----------------------|                 ----------------              -------------                 ---------------	       ---------                      
- *       |                 |               |   |         |                                                                                   ▼                                                   
- *       |                 |               |   |         |                                                                             timing fanout latest saved orderId                                                  
- *       |                 |--2、durable --|   |	         |                                                                                   ▼
- *       |                                     |         |                                                                                   ▼                                                                                   
- *       |                                     |         |                 ----------------              -------------                 ---------------                                                                          
- *       |                                     |queue3	 | ---subscript-▶▶ |   matcher    |              |           |                 |   slave     |                                                                         
- *       |                                     |         |  none confirm   | (consumer)   |---publish -->|ring buffer| ---subscript-▶▶ |  consumer   |-------on fanout event start------------                                                                         
- *       |                                     | 	     |                 |              |              |           |                 |             | (cleaing saved history orders then stop)                                                                           
- *       |                                     | 	     |                 ----------------              -------------                 ---------------                                                                          
- *       |                                     |---------|
+ *                                                        |<---------------------------------------------------4、async to save db------------------------------------------------------------>|       
+ *                                              |---------|                                                                                                                         
+ *                                              |         |                  ----------------              -------------                   ---------------                              
+ *                                              |         | ---subscript-▶▶ -|   matcher    |              |           |                   |   slave     |                                                                          
+ *                                              |queue1   |  not confirm     | (consumer)   |---publish -->|ring buffer| ---subscript-▶▶- |  consumer   |-------on fanout event start------------                                                                        
+ *                                              |         |                  |              |              |           |                   |             | (cleaing saved history orders then stop)                                                                         
+ *                                              |         |                  ----------------              -------------                   ---------------                                                                          
+ *                                              |         |                                                                                   ▲
+ *                                              |         |                                                                                   ▲
+ *                                              |         |                                                                            timing fanout latest saved orderId
+ *                                              |         |                                                                                   ▲
+ * --------------                  -----------------------|                   ----------------             -------------                   ---------------           ---------                      
+ * |  webgate   | -1、publish-->   |  fanout    |		  | ---subscript-▶▶-|   matcher    |              |           |                   |   master    | on event  |       |                      
+ * | (publisher)|                  |  broker    |queue2   |  not confirm     | (consumer)   |---publish -->|ring buffer| ---subscript-▶▶- |  consumer   |---save--> | mysql |                      
+ * |            |-◀◀---3、confirm-|            |		  |                  |              |              |           |                   |             |	         |       |                      
+ * --------------          |-----> |----------------------|                  ----------------              -------------                   ---------------	         ---------                      
+ *       |                 |               |    |         |                                                                                   ▼                                                   
+ *       |                 |               |    |         |                                                                             timing fanout latest saved orderId                                                  
+ *       |                 |--2、durable --|    |         |                                                                                   ▼
+ *       |                                      |         |                                                                                   ▼                                                                                   
+ *       |                                      |         |                  ----------------              -------------                  ---------------                                                                          
+ *       |                                      |queue3	  | ---subscript-▶▶-|   matcher    |              |           |                   |   slave     |                                                                         
+ *       |                                      |         |  not confirm     | (consumer)   |---publish -->|ring buffer| ---subscript-▶▶- |  consumer   |-------on fanout event start------------                                                                         
+ *       |                                      | 	      |                  |              |              |           |                   |             | (cleaing saved history orders then stop)                                                                           
+ *       |                                      | 	      |                  ----------------              -------------                   ---------------                                                                          
+ *       |                                      |---------|
  *       |
- *       |                       ------------     --------------        ------------       -----------------------             --------------
- *       ----------------------->|gang sheng|---->|create order|------->|update user|----->|netty client send to |    委托订单     |update order|
- *                               | create   |	  | save to    |        |estimation |      |gang sheng serv      |----▶▶▶▶▶-- | save to    |   
- *                               | order    |	  |  mysql     |        |account    |      | over Internet       |    异步推送     |  mysql     |
- *                               ------------	  --------------        ------------       -----------------------    	       --------------
+ *       |                       ------------     --------------        ------------       -----------------------            --------------
+ *       ----------------------->|gang sheng|---->|create order|------->|update user|----->|netty client send msg|    委托订单   |update order|
+ *                               | create   |	  | save to    |        |estimation |      |to gang sheng server |--------▶▶- | save to    |   
+ *                               | order    |	  |  mysql     |        |account    |      | over Internet       |    异步推送   |  mysql     |
+ *                               ------------	  --------------        ------------       -----------------------    	      --------------
  *                                                                                                       |                
  *                                                                                                       |		           
  *                                                                                                       |		        
- *                                                                                                       |		                -------------- 
- *                                                                                                       |            成交记录     |update order| 
- *                                                                                                       |-------------▶▶▶▶▶--|save to     |  
- *                                                                                                                    异步推送     |  mysql     | 
- * 															                                                                    -------------- 
+ *                                                                                                       |		               ---------------- 
+ *                                                                                                       |            成交记录    |update order   | 
+ *                                                                                                       |----------------▶▶- |create tradelog|  
+ *                                                                                                                    异步推送   |save to mysql  | 
+ * 															                                                                   ----------------- 
  * 
  * 
  *       
