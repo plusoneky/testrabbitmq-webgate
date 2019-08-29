@@ -40,18 +40,18 @@ import org.springframework.context.annotation.Scope;
  *       |                                      |---------|
  *       |
  *       |                       ------------     --------------        ------------       -----------------------      ------------             --------------    
- *       ----------------------->|gang sheng|---->|create order|------->|update user|----->|netty client send msg|----->|gang sheng|  委托订单        |update order|    
- *                               | create   |	  | save to    |        |estimation |      |to gang sheng server |      | server   |--------▶▶- | save to    |    
- *                               | order    |	  |  mysql     |        |account    |      | over Internet       |      |          |  异步推送        |  mysql     |    
- *                               ------------	  --------------        ------------       -----------------------      ------------    	    --------------    
- *                                                                                                                            |        		                                  
- *                                                                                                                            |			    	                      
- *                                                                                                                            |			    	                      
- *                                                                                                                            |                ----------------  
- *                                                                                                                            |      成交记录        |update order   | 
- *                                                                                                                            |------------▶▶- |create tradelog| 
- *                                                                                                                		                                   异步推送        |save to mysql  | 
- *                                                                                                                                              ----------------- 
+ *       ----------------------->|gang sheng|---->|create order|        |  redis    |      |                     |----->|gang sheng|  委托订单        |update order|    
+ *                               | create   |1、	  | save to    |        |(estimation|      |   gang sheng server |      | server   |--------▶▶- | save to    |    
+ *                               | order    |	  |  mysql     |        |account)   |      |                     |      |          |  异步推送        |  mysql     |    
+ *                               ------------	  --------------     --->------------    |-> ---------------------      ------------    	     --------------    
+ *                                    |------------------------------|                   |                                       |        		                                  
+ *                                    | 2、update user estimation account to redis       |                                       |			    	                      
+ *                                    |                                                  |                                       |			    	                      
+ *                                    |--------------------------------------------------|                                       |                 ----------------  
+ *                                      3、netty client send message gang sheng server over Internet                             |      成交记录        |update order   | 
+ *                                                                                                                               |------------▶▶- |create tradelog| 
+ *                                                                                                                		                                           异步推送        |save to mysql  | 
+ *                                                                                                                                                 ----------------- 
  * 
  * 
  *       
