@@ -39,19 +39,19 @@ import org.springframework.context.annotation.Scope;
  *       |                                      | 	      |                  ----------------              -------------                   ---------------                                                                          
  *       |                                      |---------|
  *       |
- *       |                       ------------     --------------        ------------       ------------------------------             --------------    
- *       ----------------------->|gang sheng|---->|create order|        |  redis    |      |                            |  委托订单        |update order|    
- *                               | create   |1、	  | save to    |        |(estimation|      |   gang sheng server        |--------▶▶- | save to    |    
- *                               | order    |	  |  mysql     |        |account)   |      |                            |  异步推送        |  mysql     |    
- *                               ------------	  --------------     --->------------    |-> ----------------------------             --------------    
+ *       |                       ------------     --------------        ------------       ------------------------------                      --------------    
+ *       ----------------------->|gang sheng|---->|create order|        |  redis    |      |                            |  entrust order        |update order|    
+ *                               | create   |1、	  | save to    |        |(estimation|      |   gang sheng server        |-----------------▶▶-   | save to    |    
+ *                               | order    |	  |  mysql     |        |account)   |      |                            |  subscript            |  mysql     |    
+ *                               ------------	  --------------     --->------------    |-> ----------------------------                       --------------    
  *                                    |------------------------------|                   |                           |        		                                  
  *                                    | 2、update user estimation account to redis       |                           |			    	                      
  *                                    |                                                  |                           |			    	                      
- *                                    |--------------------------------------------------|                           |                 ----------------  
- *                                      3、netty client send message gang sheng server over Internet                 |      成交记录        |update order   | 
- *                                                                                                                   |------------▶▶- |create tradelog| 
- *                                                                                                                		           异步推送        |save to mysql  | 
- *                                                                                                                                     ----------------- 
+ *                                    |--------------------------------------------------|                           |                       ----------------  
+ *                                      3、netty client send message gang sheng server over Internet                 |      trade log        |update order   | 
+ *                                                                                                                   |------------------▶▶- |create tradelog| 
+ *                                                                                                                		    subscript        |save to mysql  | 
+ *                                                                                                                                           ----------------- 
  * 
  * 
  *       
