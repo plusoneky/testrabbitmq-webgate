@@ -39,26 +39,27 @@ import org.springframework.context.annotation.Scope;
  *       |                                      | 	      |                  ----------------              -------------                   ---------------                                                                          
  *       |                                      |---------|
  *       |
- *       |                       ------------     --------------        ------------       ------------------------------                      --------------    
- *       ----------------------->|gang sheng|---->|create order|        |  redis    |      |                            |  entrust order        |update order|    
- *                               | create   |1、	  | save to    |        |(estimation|      |   gang sheng server        |-----------------▶▶-   | save to    |    
- *                               | order    |	  |  mysql     |        |account)   |      |                            |  subscript            |  mysql     |    
- *                               ------------	  --------------     --->------------    |-> ----------------------------                       --------------    
- *                                    |------------------------------|                   |                           |        		                                  
- *                                    | 2、update user estimation account to redis       |                           |			    	                      
- *                                    |                                                  |                           |			    	                      
- *                                    |--------------------------------------------------|                           |                       ----------------  
- *                                      3、netty client send message gang sheng server over Internet                 |      trade log        |update order   | 
- *                                                                                                                   |------------------▶▶- |create tradelog| 
- *                                                                                                                		    subscript        |save to mysql  | 
- *                                                                                                                                           ----------------- 
- * 
- * 
- *       
- *       
- *       
- *       
- *       
+ *       |                       ------------     --------------        ------------       ------------------------------                       -------------------    
+ *       ----------------------->|gang sheng|---->|create order|        |  redis    |      |                            |  entrust order        |update order save |    
+ *                               | create   |1、	  | save to    |        |(estimation|      |   gang sheng server        |---------------------> |gangsheng order id|    
+ *                               | order    |	  |  mysql     |        |account)   |      |                            |----|                  |to mysql          |    
+ *                               ------------	  --------------     --->------------    |-> ----------------------------    |                  --------------------    
+ *                                    |------------------------------|                   |                           ▲       |        		                                  
+ *                                    | 2、update user estimation account to redis       |                           |       |			    	                      
+ *                                    |                                                  |                           |       |			    	                      
+ *                                    |--------------------------------------------------|                           |       |               ----------------  
+ *                                      3、netty client send message gang sheng server over Internet                 |       |    trade log  |update order   | 目前是检查到匹配保存到临时表，
+ *                                         sync return, fail rollback estimation account                             |       |----------▶▶- |create tradelog| 
+ *                                                                                                                   |            subscript  |save to mysql  | 
+ *                                                                                                                   |                       ----------------- 
+ *                                                                                                                   |
+ *                                                                                                                   |-----------------------|---------|
+ *                                                                                                                                           | 单笔订单 |
+ *                                                                                                                                           | 定时查询 |
+ *                                                                                                                                           | 成交记录 |
+ *                                                                                                                                           |---------|                                                                                                                                                  
+ *                                                                                                                                            
+ *                                                                                                                                                   
  * 一、记账服务
  * 为了确保用户资金不透支需要遵循一条原则：如果是增加余额，那必须先走数据库，成功之后再增加预估值账户余额。如果是扣减余额，应该先扣减预估值账户，  在保存数据库。    
  * 解决基于Redis内存的预估值账户的数据一致性问题：
