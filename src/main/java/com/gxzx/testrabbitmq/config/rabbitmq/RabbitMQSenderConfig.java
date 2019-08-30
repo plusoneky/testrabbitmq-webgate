@@ -39,18 +39,18 @@ import org.springframework.context.annotation.Scope;
  *       |                                      | 	      |                  ----------------              -------------                   ---------------                                                                          
  *       |                                      |---------|
  *       |
- *       |                       ------------     --------------        ------------       ------------------------------                       -------------------    
- *       ----------------------->|gang sheng|---->|create order|        |  redis    |      |                            |  entrust order        |update order save |    
- *                               | create   |1、	  | save to    |        |(estimation|      |   gang sheng server        |---------------------> |gangsheng order id|    
- *                               | order    |	  |  mysql     |        |account)   |      |                            |----|                  |to mysql          |    
- *                               ------------	  --------------     --->------------    |-> ----------------------------    |                  --------------------    
+ *       |                       ------------     --------------        ------------       ------------------------------                         -------------------------------------------------------------------    
+ *       ----------------------->|gang sheng|---->|create order|        |  redis    |      |                            |  entrustOrder finished  |原因是成交记录也是异步推送                                                                                                             |    
+ *                               | create   |1、	  | save to    |        |(estimation|      |   gang sheng server        |--------------------▶▶- |所以需要判断订单剩余数量与推送数据是否一致，如果一致则更新订单为已完成 |    
+ *                               | order    |	  |  mysql     |        |account)   |      |                            |----|                    |如果不一致，则将该订单全部成交记录先添加到临时表中，定期再更新                    |    
+ *                               ------------	  --------------     --->------------    |-> ----------------------------    |                    -------------------------------------------------------------------    
  *                                    |------------------------------|                   |                           ▲       |        		                                  
  *                                    | 2、update user estimation account to redis       |                           |       |			    	                      
  *                                    |                                                  |                           |       |			    	                      
  *                                    |--------------------------------------------------|                           |       |               ----------------  
- *                                      3、netty client send message gang sheng server over Internet                 |       |    trade log  |update order   | 目前是检查到存在匹配的订单才保存到临时表
- *                                         sync return, fail rollback estimation account                             |       |----------▶▶- |create tradelog| 会有一个进程扫描这张表，构造一个特殊的toTrade消息，包括对手单
- *                                                                                                                   |            subscript  |save to mysql  | 
+ *                                      3、netty client send message gang sheng server over Internet,                |       |    trade log  |update order   | 目前是检查到存在匹配的订单才保存到临时表
+ *                                         sync return gangshengOrderId,                                             |       |----------▶▶- |create tradelog| 会有一个进程扫描这张表，构造一个特殊的toTrade消息，包括对手单
+ *                                         if failed then rollback estimation account.                               |            subscript  |save to mysql  | 
  *                                                                                                                   |                       ----------------- 
  *                                                                                                                   |
  *                                                                                                                   |-----------------------|---------|
