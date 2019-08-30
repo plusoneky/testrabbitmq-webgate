@@ -24,9 +24,9 @@ import org.springframework.context.annotation.Scope;
  *                                              |         |                                                                            timing fanout latest saved orderId
  *                                              |         |                                                                                   ▲
  * --------------                  -----------------------|                   ----------------             -------------                   ---------------           ---------                      
- * |  webgate   | -1、publish-->   |  fanout    |		  | ---subscript-▶▶-|   matcher    |              |           |                   |   master    | on event  |       |                      
+ * |  webgate   | -1、publish----->|  fanout    |		  | ---subscript-▶▶-|   matcher    |              |           |                   |   master    | on event  |       |                      
  * | (publisher)|                  |  broker    |queue2   |  not confirm     | (consumer)   |---publish -->|ring buffer| ---subscript-▶▶- |  consumer   |---save--> | mysql |                      
- * |            |-◀◀---3、confirm-|            |		  |                  |              |              |           |                   |             |	         |       |                      
+ * |            |-◀◀---3、confirm--|            |		  |                  |              |              |           |                   |             |	         |       |                      
  * --------------          |-----> |----------------------|                  ----------------              -------------                   ---------------	         ---------                      
  *       |                 |               |    |         |                                                                                   ▼                                                   
  *       |                 |               |    |         |                                                                             timing fanout latest saved orderId                                                  
