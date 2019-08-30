@@ -48,8 +48,8 @@ import org.springframework.context.annotation.Scope;
  *                                    | 2、update user estimation account to redis       |                           |       |			    	                      
  *                                    |                                                  |                           |       |			    	                      
  *                                    |--------------------------------------------------|                           |       |               ----------------  
- *                                      3、netty client send message gang sheng server over Internet                 |       |    trade log  |update order   | 目前是检查到匹配保存到临时表，
- *                                         sync return, fail rollback estimation account                             |       |----------▶▶- |create tradelog| 
+ *                                      3、netty client send message gang sheng server over Internet                 |       |    trade log  |update order   | 目前是检查到存在匹配的订单才保存到临时表
+ *                                         sync return, fail rollback estimation account                             |       |----------▶▶- |create tradelog| 会有一个进程扫描这张表，构造一个特殊的toTrade消息，包括对手单
  *                                                                                                                   |            subscript  |save to mysql  | 
  *                                                                                                                   |                       ----------------- 
  *                                                                                                                   |
